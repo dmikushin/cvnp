@@ -21,6 +21,7 @@ namespace cvnp
     // For cv::Mat (*with* shared memory)
     pybind11::array mat_to_nparray(const cv::Mat& m);
     cv::Mat         nparray_to_mat(pybind11::array& a);
+    const cv::Mat   nparray_to_mat(const pybind11::array& a);
 
     // For cv::Matx (*without* shared memory)
     template<typename _Tp, int _rows, int _cols>

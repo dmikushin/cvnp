@@ -130,6 +130,24 @@ namespace cvnp
         return m;
     }
 
+
+    const cv::Mat nparray_to_mat(const pybind11::array& a)
+    {
+        // note: empty arrays are not contiguous, but that's fine. Just
+        //       make sure to not access mutable_data
+        bool is_contiguous = is_array_contiguous(a);
+        bool is_not_empty = a.size() != 0;
+        if (! is_contiguous && is_not_empty) {
+            throw std::invalid_argument("cvnp::nparray_to_mat / Only contiguous numpy arrays are supported. / Please use np.ascontiguousarray() to convert your matrix");
+        }
+
+        int depth = detail::determine_cv_depth(a.dtype());
+        int type = detail::determine_cv_type(a, depth);
+        cv::Size size = detail::determine_cv_size(a);
+        cv::Mat m(size, type, is_not_empty ? const_cast<void*>(a.data(0)) : nullptr);
+        return m;
+    }
+
     // this version tries to handles strides and submatrices
     // this is WIP, currently broken, and not used
     cv::Mat nparray_to_mat_with_strides_broken(pybind11::array& a)
